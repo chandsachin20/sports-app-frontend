@@ -7,7 +7,7 @@ import Profilepic from "../../assests/profilr.png";
 
 import "../Events/events.css";
 
-export default function Events() {
+export default function Events({ history}) {
   const [sports, setSports] = useState("");
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
@@ -15,7 +15,8 @@ export default function Events() {
   const [thumbnail, setThumbnail] = useState(null);
   const [date, setDate] = useState("");
   const[errorMessage, setErrorMessage] = useState(false);
-
+  const [ success, setSuccess] = useState('');
+  const[ connected, setConnected] = useState(true);
 
   const preview = useMemo(() => {
     return thumbnail ? URL.createObjectURL(thumbnail) : null;
@@ -44,7 +45,9 @@ export default function Events() {
       ) {
         await api.post("/event", eventData, { headers: { user_id } });
         console.log("eventdata", eventData);
+        history.push('./dashboard')
         console.log("data has been saved");
+        setSuccess(true);
       }
       else{
         setErrorMessage(true);
@@ -54,6 +57,7 @@ export default function Events() {
       }
       
     } catch (error) {
+      setConnected(false);
       console.log("missing  required data");
     }
   };
@@ -61,8 +65,9 @@ export default function Events() {
 
   return (
     <Container>
-      <h1>Create your Event</h1>
+      <h2>Create your Event</h2>
       <form onSubmit={handleSubmit}>
+     
         <FormGroup>
           <label for="thumbnail">Upload image</label>
           <label
@@ -132,11 +137,23 @@ export default function Events() {
           />
         </FormGroup>
 
-        <Button>Create Event</Button>
+       <FormGroup> <Button className="submit-btn" >Create Event</Button></FormGroup>
+       <FormGroup> <Button className="secondary-btn">Cancel Event</Button></FormGroup>
+
       </form>
-      {errorMessage ? (
+       {errorMessage ? (
          <Alert color="danger">
-        Missing some information
+        input fields are empty
+      </Alert>
+      ): " "}
+      {success ? (
+         <Alert color="success">
+       Event Created successfully!
+      </Alert>
+      ): " "}
+      {!connected ? (
+         <Alert color="danger">
+     Server not connected
       </Alert>
       ): " "}
     </Container>

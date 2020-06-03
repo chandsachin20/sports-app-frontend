@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import api from "../../Services/api";
-import { Button, Form, FormGroup, Label, Input, FormText } from "reactstrap";
+import { Alert, Button, Form, FormGroup, Label, Input, FormText } from "reactstrap";
 import Container from "reactstrap/lib/Container";
 
 function Register({ history }) {
@@ -8,28 +8,41 @@ function Register({ history }) {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [errorMessage, seterrorMessage] = useState("");
+  const [error, setError] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     console.log("result of the submit ", email, password, firstName, lastName);
 
-    const response = await api.post("/user/register", {
-      email,
-      password,
-      firstName,
-      lastName,
-    });
-
-    const userId = response.data._id || false;
-
-    if (userId) {
-      //local stroage
-      localStorage.setItem("user", userId);
-      history.push("/login");
-    } else {
-      const { message } = response.data;
-      console.log(message);
+    if(email !== '' && password !=='' && firstName !== '' && lastName !== ''){
+      const response = await api.post("/user/register", {
+        email,
+        password,
+        firstName,
+        lastName,
+      });
+  
+      const userId = response.data._id || false;
+  
+      if (userId) {
+        //local stroage
+        localStorage.setItem("user", userId);
+        history.push("/login");
+      } else {
+        const { message } = response.data;
+        console.log(message);
+      }
     }
+    else{
+      setError(true);
+      seterrorMessage("Some fields are empty");
+      setTimeout(() => {
+          setError(false);
+          seterrorMessage('');
+      }, 2000);
+    }
+    
   };
 
   return (
@@ -38,7 +51,7 @@ function Register({ history }) {
       <p>
         Please <strong>Register </strong> for a new account
       </p>
-      <Form onSubmit={handleSubmit} inline>
+      <Form onSubmit={handleSubmit} >
         <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
           <Label for="FirstName" className="mr-sm-2">
             First Name
@@ -53,7 +66,7 @@ function Register({ history }) {
         </FormGroup>
         <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
           <Label for="LastName" className="mr-sm-2">
-            Password
+            Last Name
           </Label>
           <Input
             type="text"
@@ -88,8 +101,16 @@ function Register({ history }) {
             onChange={(event) => setPassword(event.target.value)}
           />
         </FormGroup>
-        <Button>Submit</Button>
-      </Form>
+        <FormGroup> <Button className="submit-btn">Submit</Button>
+   </FormGroup>
+   <FormGroup> <Button className="secondary-btn" onClick={() => history.push('./login')}>Login Instead?</Button>
+   </FormGroup>
+          </Form>
+          {error ? (
+         <Alert color="danger">
+        Missing some information
+      </Alert>
+      ): " "}
     </Container>
   );
 }
