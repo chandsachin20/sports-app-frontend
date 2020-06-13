@@ -26,6 +26,8 @@ function Login({ history }) {
 
     if (email !== "" && password !== "") {
       try {
+        const response = await axios.post("http://localhost:8001/login", { email, password });
+    const userId = response.data._id || false;
         if (userId) {
           //local stroage
           localStorage.setItem("user", userId);
@@ -52,8 +54,7 @@ function Login({ history }) {
           }, 2000);
     }
 
-    const response = await axios.post("/login", { email, password });
-    const userId = response.data._id || false;
+    
   };
 
   return (
