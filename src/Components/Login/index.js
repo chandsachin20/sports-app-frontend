@@ -26,8 +26,10 @@ function Login({ history }) {
 
     if (email !== "" && password !== "") {
       try {
+        console.log("login");
         const response = await axios.post("http://localhost:8001/login", { email, password });
-    const userId = response.data._id || false;
+        const userId = response.data._id || false;
+        console.log("user id:", userId);
         if (userId) {
           //local stroage
           localStorage.setItem("user", userId);
@@ -43,24 +45,23 @@ function Login({ history }) {
           console.log(message);
         }
       } catch (error) {
+        setError(true);
         console.log("error");
       }
-    }else{
+    } else {
       setError(true);
-          seterrorMessage('empty input fields');
-          setTimeout(() => {
-            setError(false);
-            seterrorMessage("");
-          }, 2000);
+      seterrorMessage("empty input fields");
+      setTimeout(() => {
+        setError(false);
+        seterrorMessage("");
+      }, 2000);
     }
-
-    
   };
 
   return (
     <Container>
       <Form onSubmit={handleSubmit}>
-      {error ? <Alert color="danger">{errorMessage}</Alert> : " "}
+        {error ? <Alert color="danger">{errorMessage}</Alert> : " "}
 
         <FormGroup className="from-group"></FormGroup>
         <FormGroup className="mb-2 mr-sm-2 mb-sm-0">
@@ -102,7 +103,7 @@ function Login({ history }) {
           </Button>
         </FormGroup>
       </Form>
-         </Container>
+    </Container>
   );
 }
 
