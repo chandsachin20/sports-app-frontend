@@ -28,11 +28,15 @@ function Login({ history }) {
       try {
         console.log("login");
         const response = await axios.post("http://localhost:8001/login", { email, password });
-        const userId = response.data._id || false;
-        console.log("user id:", userId);
-        if (userId) {
+        const user_id = response.data.user_id || false;
+        //after token
+        const user = response.data.user || false;
+
+        console.log("user id:", user_id);
+        if (user_id) {
           //local stroage
-          localStorage.setItem("user", userId);
+          localStorage.setItem("user_id", user_id);
+          localStorage.setItem("user", user);
           history.push("/dashboard");
         } else {
           const { message } = response.data;

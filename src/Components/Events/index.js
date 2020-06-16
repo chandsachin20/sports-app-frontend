@@ -1,31 +1,43 @@
 import React, { useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../Services/api";
-import { Button,Alert, Form, FormGroup, Label, Input, Badge } from "reactstrap";
+import {
+  Button,
+  Alert,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Badge,
+} from "reactstrap";
 import Container from "reactstrap/lib/Container";
 import Profilepic from "../../assests/profilr.png";
 
 import "../Events/events.css";
 
-export default function Events({ history}) {
+export default function Events({ history }) {
   const [sports, setSports] = useState("");
   const [title, setTitle] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [thumbnail, setThumbnail] = useState(null);
   const [date, setDate] = useState("");
-  const[errorMessage, setErrorMessage] = useState(false);
-  const [ success, setSuccess] = useState('');
-  const[ connected, setConnected] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(false);
+  const [success, setSuccess] = useState("");
+  const [connected, setConnected] = useState(true);
+
+  useEffect(() => {
+    if (!user) history.push("/login");
+  }, []);
 
   const preview = useMemo(() => {
     return thumbnail ? URL.createObjectURL(thumbnail) : null;
   }, [thumbnail]);
 
   const handleSubmit = async (event) => {
-    const user_id = localStorage.getItem("user");
+    const user = localStorage.getItem("user");
 
-    console.log(user_id);
+    console.log(user);
     const eventData = new FormData();
     eventData.append("thumnail", thumbnail);
     eventData.append("price", price);
@@ -43,31 +55,25 @@ export default function Events({ history}) {
         date !== "" &&
         thumbnail !== null
       ) {
-        await api.post("/event", eventData, { headers: { user_id } });
-        console.log("eventdata", eventData);
-        history.push('./dashboard')
-        console.log("data has been saved");
+        await api.post("/event", eventData, { headers: { user } });
+        history.push("/dashboard");
         setSuccess(true);
-      }
-      else{
+      } else {
         setErrorMessage(true);
         setTimeout(() => {
           setErrorMessage(false);
-        }, (2000));
+        }, 2000);
       }
-      
     } catch (error) {
       setConnected(false);
       console.log("missing  required data");
     }
   };
 
-
   return (
     <Container>
       <h2>Create your Event</h2>
       <form onSubmit={handleSubmit}>
-     
         <FormGroup>
           <label for="thumbnail">Upload image</label>
           <label
@@ -137,25 +143,26 @@ export default function Events({ history}) {
           />
         </FormGroup>
 
-       <FormGroup> <Button className="submit-btn" >Create Event</Button></FormGroup>
-       <FormGroup> <Button className="secondary-btn">Cancel Event</Button></FormGroup>
-
+        <FormGroup>
+          {" "}
+          <Button className="submit-btn">Create Event</Button>
+        </FormGroup>
+        <FormGroup>
+          {" "}
+          <Button className="secondary-btn">Cancel Event</Button>
+        </FormGroup>
       </form>
-       {errorMessage ? (
-         <Alert color="danger">
-        input fields are empty
-      </Alert>
-      ): " "}
+      {errorMessage ? (
+        <Alert color="danger">input fields are empty</Alert>
+      ) : (
+        " "
+      )}
       {success ? (
-         <Alert color="success">
-       Event Created successfully!
-      </Alert>
-      ): " "}
-      {!connected ? (
-         <Alert color="danger">
-     Server not connected
-      </Alert>
-      ): " "}
+        <Alert color="success">Event Created successfully!</Alert>
+      ) : (
+        " "
+      )}
+      {!connected ? <Alert color="danger">Server not connected</Alert> : " "}
     </Container>
   );
 }
