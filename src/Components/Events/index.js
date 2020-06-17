@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../Services/api";
 import {
@@ -26,9 +26,9 @@ export default function Events({ history }) {
   const [success, setSuccess] = useState("");
   const [connected, setConnected] = useState(true);
 
-  useEffect(() => {
-    if (!user) history.push("/login");
-  }, []);
+  // useEffect(() => {
+  //   if (!user) history.push("/login");
+  // }, []);
 
   const preview = useMemo(() => {
     return thumbnail ? URL.createObjectURL(thumbnail) : null;

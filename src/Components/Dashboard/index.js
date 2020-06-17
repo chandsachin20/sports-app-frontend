@@ -3,6 +3,7 @@ import { Button, ButtonGroup, Alert } from "reactstrap";
 import moment from "moment";
 import "./dashboard.css";
 import Axios from "axios";
+import socketio from "socket.io-client";
 
 function Dashboard({ history }) {
   const [events, setEvents] = useState([]);
@@ -15,7 +16,10 @@ function Dashboard({ history }) {
   useEffect(() => {
     getEvents();
   }, []);
-
+  
+  useEffect( ()=> {
+    const socket = socketio('http://localhost:8001')
+  },[])
   const filterHandler = (query) => {
     setRSelected(query);
     getEvents(query);
@@ -42,6 +46,12 @@ function Dashboard({ history }) {
     } catch (error) {
       history.push("/login");
     }
+  };
+
+  const logoutHandler = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("user_id");
+    history.push("/login");
   };
 
   const deleteEventHandler = async (eventId) => {
@@ -104,9 +114,15 @@ function Dashboard({ history }) {
             Swimming
           </Button>
         </ButtonGroup>
-        <Button color="secondary" onClick={() => history.push("events")}>
-          Events
-        </Button>
+        <ButtonGroup>
+          {" "}
+          <Button color="secondary" onClick={() => history.push("events")}>
+            Events
+          </Button>
+          <Button color="danger" onClick={() => logoutHandler}>
+            Logout
+          </Button>
+        </ButtonGroup>
       </div>
       <ul className="events-list">
         {events.map((event) => (

@@ -1,15 +1,8 @@
 import React, { useState } from "react";
 import api from "../../Services/api";
-import {
-  Alert,
-  Button,
-  Form,
-  FormGroup,
-  Label,
-  Input,
-  FormText,
-} from "reactstrap";
+import { Alert, Button, Form, FormGroup, Label, Input } from "reactstrap";
 import Container from "reactstrap/lib/Container";
+import Axios from "axios";
 
 function Register({ history }) {
   const [email, setEmail] = useState("");
@@ -21,7 +14,7 @@ function Register({ history }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-// /    console.log("result of the submit ", email, password, firstName, lastName);
+    // /    console.log("result of the submit ", email, password, firstName, lastName);
 
     if (
       email !== "" &&
@@ -29,7 +22,7 @@ function Register({ history }) {
       firstName !== "" &&
       lastName !== ""
     ) {
-      const response = await api.post("http://localhost:8001/user/register", {
+      const response = await Axios.post("http://localhost:8001/user/register", {
         email,
         password,
         firstName,
@@ -37,16 +30,23 @@ function Register({ history }) {
       });
 
       const user = response.data.user || false;
-      const user_id = response.data.user_id || false;
-      
+      const user_id = response.data._id || false;
 
-      if (user) {
+      console.log("user:", user);
+      console.log("user id: ", user_id);
+      if (user && user_id) {
         //local stroage
         localStorage.setItem("user", user);
         localStorage.setItem("user_id", user_id);
         history.push("/dashboard");
       } else {
         const { message } = response.data;
+        setError(true);
+        seterrorMessage(message);
+        setTimeout(() => {
+          setError(false);
+          seterrorMessage("");
+        }, 2000);
         console.log(message);
       }
     } else {
