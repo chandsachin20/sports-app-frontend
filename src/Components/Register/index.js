@@ -38,7 +38,7 @@ function Register({ history }) {
         //local stroage
         localStorage.setItem("user", user);
         localStorage.setItem("user_id", user_id);
-        history.push("/dashboard");
+        history.push();
       } else {
         const { message } = response.data;
         setError(true);

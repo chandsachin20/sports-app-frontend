@@ -32,11 +32,13 @@ function Login({ history }) {
         //after token
         const user = response.data.user || false;
 
-        console.log("user id:", user_id);
+        
         if (user_id) {
           //local stroage
           localStorage.setItem("user_id", user_id);
           localStorage.setItem("user", user);
+          console.log('usr: ', user)
+          console.log("user id:", user_id);
           history.push("/dashboard");
         } else {
           const { message } = response.data;
@@ -101,7 +103,7 @@ function Login({ history }) {
         <FormGroup>
           <Button
             className="secondary-btn"
-            onClick={() => history.push("./register")}
+            onClick={() => history.push("/register")}
           >
             Register
           </Button>

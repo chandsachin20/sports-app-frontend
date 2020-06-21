@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Button, ButtonGroup, Alert } from "reactstrap";
 import moment from "moment";
 import "./dashboard.css";
@@ -9,18 +9,34 @@ function Dashboard({ history }) {
   const [events, setEvents] = useState([]);
   const user = localStorage.getItem("user");
   const user_id = localStorage.getItem("user_id");
+
   const [rSelected, setRSelected] = useState(null);
   const [error, setError] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  const [messageHandler, setMessageHandler] = useState("");
+  const [eventsRequest, setEventRequest] = useState([]);
+
   useEffect(() => {
     getEvents();
   }, []);
-  
-  
-  useEffect( ()=> {
-    const socket = socketio('http://localhost:8001')
-  },[])
+
+  const socket = useMemo(
+    () =>
+      socketio("http://localhost:8001", {
+        query: {
+          user: user_id,
+        },
+      }),
+    [user_id]
+  );
+
+  useEffect(() => {
+    socket.on("registration request", (data) =>
+      setEventRequest([...eventsRequest, data])
+    );
+  }, [eventsRequest, socket]);
+
   const filterHandler = (query) => {
     setRSelected(query);
     getEvents(query);
@@ -55,6 +71,31 @@ function Dashboard({ history }) {
     history.push("/login");
   };
 
+  const registrationRequestHandler = async (event) => {
+    try {
+      await Axios.post(`http://localhost:8001/register/${event.id}`, {
+        headers: { user },
+      });
+      setSuccess(true);
+      setTimeout(() => {
+        setSuccess(false);
+        setMessageHandler(
+          `the request for the event ${event.title} was successfully!`
+        );
+        filterHandler(null);
+      }, 2500);
+    } catch (error) {
+      setError(true);
+      setMessageHandler(
+        `the request for the event ${event.title} wasn't successfully!`
+      );
+      setTimeout(() => {
+        setError(false);
+        setMessageHandler("");
+      }, 2000);
+    }
+  };
+
   const deleteEventHandler = async (eventId) => {
     try {
       await Axios.delete(`http://localhost:8001/event/${eventId}`, {
@@ -65,18 +106,22 @@ function Dashboard({ history }) {
       setSuccess(true);
       setTimeout(() => {
         setSuccess(false);
+        setMessageHandler("Event deleted succesfully");
         filterHandler(null);
       }, 2500);
     } catch (error) {
       setError(true);
+      setMessageHandler("Error in deleting event");
       setTimeout(() => {
         setError(false);
+        setMessageHandler("");
       }, 2000);
     }
   };
 
   return (
     <>
+      {console.log(eventsRequest)}
       <div className="filter-panel">
         <ButtonGroup>
           <Button
@@ -147,7 +192,9 @@ function Dashboard({ history }) {
             <span>Event Date: {moment(event.date).format("l")}</span>
             <span>Event Price: {parseFloat(event.price).toFixed(2)}</span>
             <span>Event Description: {event.description}</span>
-            <Button color="primary">Subscribe</Button>
+            <Button color="primary" onClick={registrationRequestHandler}>
+              Registration request
+            </Button>
           </li>
         ))}
       </ul>
