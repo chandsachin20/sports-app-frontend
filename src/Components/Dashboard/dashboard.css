@@ -31,10 +31,21 @@ filter-panel {
   justify-content: space-between;
 }
 
-.ul-events-list header button{
+.ul-events-list header button {
   color: black;
   position: relative;
+}
 
+ul.notifications {
+  list-style: none;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+ul.notifications li {
+  font-size: 16px;
+  line-height: 24px;
 }
 
 @media (max-width: 768px) {

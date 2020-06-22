@@ -121,7 +121,28 @@ function Dashboard({ history }) {
 
   return (
     <>
-      {console.log(eventsRequest)}
+      <ul className="notifications">
+        {eventsRequest.map((event) => {
+          return (
+            <li key={event.id}>
+              <div>
+                <strong>event.user.email</strong>
+                is Requesting to register to your event
+                <strong>{event.title}</strong>
+              </div>
+              <ButtonGroup>
+                <Button color="secondary" onClick={() => {}}>
+                  Accept
+                </Button>
+                <Button color="danger" onClick={() => {}}>
+                  Cancel
+                </Button>
+              </ButtonGroup>
+            </li>
+          );
+        })}
+      </ul>
+
       <div className="filter-panel">
         <ButtonGroup>
           <Button
@@ -161,7 +182,6 @@ function Dashboard({ history }) {
           </Button>
         </ButtonGroup>
         <ButtonGroup>
-          {" "}
           <Button color="secondary" onClick={() => history.push("events")}>
             Events
           </Button>
@@ -208,7 +228,6 @@ function Dashboard({ history }) {
       )}
       {success ? (
         <Alert className="event-validation" color="success">
-          {" "}
           The event was deleted successfully!
         </Alert>
       ) : (
