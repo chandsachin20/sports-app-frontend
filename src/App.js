@@ -2,15 +2,19 @@ import React from "react";
 import "./App.css";
 import { Container } from "reactstrap";
 import Routes from "./routes";
+import {ContextWrapper} from "../src/userContext";
+
 
 function App() {
   return (
+    <ContextWrapper>
     <Container>
       <h1>Sport's App</h1>
       <div className="content">
         <Routes />
       </div>
     </Container>
+    </ContextWrapper>
   );
 }
 

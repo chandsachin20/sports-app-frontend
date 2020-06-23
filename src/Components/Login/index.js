@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import api from "../../Services/api";
 import axios from "axios";
 import {
@@ -11,9 +11,11 @@ import {
   Badge,
 } from "reactstrap";
 import Container from "reactstrap/lib/Container";
+import { userContext } from "../../userContext";
 
 function Login({ history }) {
   /*  */
+  const {  setIsLoggedIn } = useContext(userContext);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,18 +29,21 @@ function Login({ history }) {
     if (email !== "" && password !== "") {
       try {
         console.log("login");
-        const response = await axios.post("http://localhost:8001/login", { email, password });
+        const response = await axios.post("http://localhost:8001/login", {
+          email,
+          password,
+        });
         const user_id = response.data.user_id || false;
         //after token
         const user = response.data.user || false;
 
-        
         if (user_id) {
           //local stroage
           localStorage.setItem("user_id", user_id);
           localStorage.setItem("user", user);
-          console.log('usr: ', user)
+          console.log("usr: ", user);
           console.log("user id:", user_id);
+          setIsLoggedIn(true)
           history.push("/dashboard");
         } else {
           const { message } = response.data;

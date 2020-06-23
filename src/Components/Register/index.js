@@ -1,10 +1,15 @@
-import React, { useState } from "react";
+import React, { useState , useContext} from "react";
 import api from "../../Services/api";
 import { Alert, Button, Form, FormGroup, Label, Input } from "reactstrap";
 import Container from "reactstrap/lib/Container";
 import Axios from "axios";
+import { userContext} from  "../../userContext";
+
 
 function Register({ history }) {
+
+  const {  setIsLoggedIn } = useContext(userContext);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -38,7 +43,8 @@ function Register({ history }) {
         //local stroage
         localStorage.setItem("user", user);
         localStorage.setItem("user_id", user_id);
-        history.push();
+        setIsLoggedIn(true)
+        history.push("/");
       } else {
         const { message } = response.data;
         setError(true);
